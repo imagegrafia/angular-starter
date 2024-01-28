@@ -28,3 +28,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 
 # docker setup
+
+# run docker file
+# docker build -t "angular-ui" .
+# docker run -d -p4200:80 --name "ui-app-deploy" angular-ui:latest

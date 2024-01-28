@@ -1,15 +1,18 @@
-# FROM node:latest as node
-FROM nginx:latest
-# WORKDIR  /app
-# COPY ./dist/angular-startup .
-ADD ./dist/angular-startup/browser /usr/share/nginx/html
-# only for document
-EXPOSE 80 
-# RUN [startup]
-# CMD ["nginx", "-g", "daemon off;"]
+#stage 1 build app using node
+FROM node:latest as app-build
+WORKDIR  /app
+# COPY package*.json ./
+COPY . ./
+RUN npm install
+RUN npm run build
 
-# Docker build and run command
+#stage 2 deploy app to nginx container
+FROM nginx:alpine
+COPY --from=app-build /app/dist/angular-startup/browser /usr/share/nginx/html
 
-# docker run -itd -p 80:80 --name angular-3 angular
-# docker run -itd -p --name angular-3 angular
-# docker build  --no-cache -t angular .
+# fix nginx routing issue
+COPY ./deployment/nginx-default.conf /etc/nginx/conf.d/default.conf
+
+# run docker file
+# docker build -t "angular-ui" .
+# docker run -d -p4200:80 --name "ui-app-deploy" angular-ui:latest
